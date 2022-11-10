@@ -23,12 +23,18 @@ protected:
   size_t sz;
   T* pMem;
 public:
-  TDynamicVector(size_t size = 1) : sz(size)
+  TDynamicVector(size_t size = 1) 
   {
-    if (sz == 0)
-      throw out_of_range("Vector size should be greater than zero");
 
-    pMem = new T[sz]();// {}; // У типа T д.б. констуктор по умолчанию
+      if (size == 0)
+          throw 1;
+
+      if (size > MAX_VECTOR_SIZE)
+          throw 2;
+
+      sz = size;
+
+      pMem = new T[sz]();// {}; // У типа T д.б. констуктор по умолчанию
   }
 
   TDynamicVector(T* arr, size_t s) : sz(s)
@@ -81,10 +87,15 @@ public:
   // индексация
   T& operator[](size_t ind)
   {
+      if (ind < 0 || ind >= sz)
+          throw 3;
       return pMem[ind];
   }
   const T& operator[](size_t ind) const
   {
+      if (ind < 0 || ind >= sz)
+          throw 3;
+
       const T& tm = pMem[ind];
       return tm;
   }
@@ -92,14 +103,15 @@ public:
   T& at(size_t ind)
   {
       if ((ind < 0) || (ind >= sz))
-          throw - 1;
+          throw 3;
       return pMem[ind];
 
   }
   const T& at(size_t ind) const
   {
       if ((ind < 0) || (ind >= sz))
-          throw - 1;
+          throw 3;
+
       const T& tm = pMem[ind];
       return tm;
   }
@@ -163,7 +175,9 @@ public:
       TDynamicVector tmp(sz);
 
       for (size_t i = 0; i < sz; i++)
+
           tmp.pMem[i] = pMem[i] * val;
+
       return tmp;
   }
 
@@ -256,14 +270,18 @@ public:
 
     TDynamicMatrix(size_t s = 1) : TDynamicVector<TDynamicVector<T>>(s)
     {
-  
-        for (size_t i = 0; i < sz; i++)
-            pMem[i] = TDynamicVector<T>(sz);
+        if (s > MAX_MATRIX_SIZE)
+            throw 1;
+
+        for (size_t i = 0; i < s; i++)
+            pMem[i] = TDynamicVector<T>(s);
     }
+
     TDynamicMatrix(const TDynamicVector<TDynamicVector<T>>& v) : TDynamicVector<TDynamicVector<T>>(v) {}
 
     using TDynamicVector<TDynamicVector<T>>::operator[];
     // сравнение
+
     bool operator==(const TDynamicMatrix& m) const noexcept
     {
         return TDynamicVector<TDynamicVector<T>>::operator==(m);
